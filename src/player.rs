@@ -8,6 +8,18 @@ pub struct PlayerPlugin;
 #[derive(Component)]
 pub struct Player;
 
+pub struct PlayerSettings {
+    pub speed: f32,
+}
+
+impl Default for PlayerSettings{
+    fn default() -> Self {
+        PlayerSettings{
+            speed: 2.0,
+        }
+    }
+}
+
 /// This plugin handles player related stuff like movement
 /// Player logic is only active during the State `GameState::Playing`
 impl Plugin for PlayerPlugin {
@@ -18,7 +30,8 @@ impl Plugin for PlayerPlugin {
                 .with_system(spawn_player)
                 .with_system(spawn_camera),
         )
-        .add_system_set(SystemSet::on_update(GameState::Playing).with_system(move_player));
+        .add_system_set(SystemSet::on_update(GameState::Playing).with_system(move_player))
+        .insert_resource(PlayerSettings::default());
     }
 }
 
@@ -63,12 +76,13 @@ fn spawn_player(mut commands: Commands,
 fn move_player(
     time: Res<Time>,
     actions: Res<Actions>,
+    settings: Res<PlayerSettings>,
     mut player_query: Query<&mut Transform, With<Player>>,
 ) {
     if actions.player_movement.is_none() {
         return;
     }
-    let speed = 1.0;
+    let speed = settings.speed;
     let movement = Vec3::new(
         actions.player_movement.unwrap().x * speed * time.delta_seconds(),
         actions.player_movement.unwrap().y * speed * time.delta_seconds(),
