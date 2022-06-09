@@ -4,6 +4,7 @@ mod loading;
 mod menu;
 mod player;
 mod ui_game;
+mod physics;
 
 use crate::actions::ActionsPlugin;
 use crate::audio::InternalAudioPlugin;
@@ -16,6 +17,7 @@ use bevy::app::App;
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy::prelude::*;
 use bevy_egui::EguiPlugin;
+use crate::physics::Physics;
 use crate::ui_game::UiGame;
 
 // This example game uses States to separate logic
@@ -40,6 +42,7 @@ impl Plugin for GamePlugin {
             .add_plugin(MenuPlugin)
             .add_plugin(ActionsPlugin)
             .add_plugin(InternalAudioPlugin)
+            .add_plugin(Physics)
             .add_plugin(PlayerPlugin)
             .add_plugin(EguiPlugin)
             .add_plugin(UiGame);
