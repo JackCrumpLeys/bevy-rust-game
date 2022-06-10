@@ -1,6 +1,5 @@
 use crate::loading::FontAssets;
-use crate::GameState;
-use bevy::prelude::*;
+use crate::prelude::*;
 use bevy_egui::EguiContext;
 use egui::{Rgba, RichText};
 

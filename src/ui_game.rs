@@ -1,14 +1,9 @@
-use std::ops::DerefMut;
-use bevy::math::quat;
-use crate::player::{Player, PlayerSettings};
-use crate::{GameState, SystemSet};
-use bevy::prelude::*;
-use bevy_egui::EguiContext;
-use bevy_rapier3d::dynamics::RigidBody;
-use bevy_rapier3d::geometry::{Collider, Restitution};
-use egui::{Color32, Rgba, RichText};
-use crate::bullet::{BulletOptions, insert_bullet_at};
+use crate::bullet::{insert_bullet_at, BulletOptions};
 use crate::physics::TestBall;
+use crate::player::{Player, PlayerSettings};
+use crate::prelude::*;
+use bevy_egui::EguiContext;
+use egui::{Color32, Rgba, RichText};
 
 pub struct UiGame;
 
@@ -17,8 +12,6 @@ struct Rotation { /// had to do this because: trait `DerefMut` is required to mo
     x:f32,y:f32,z:f32
 }
 
-/// This plugin is responsible for the game menu (containing only one button...)
-/// The menu is only drawn during the State `GameState::Menu` and is removed when that state is exited
 impl Plugin for UiGame {
     fn build(&self, app: &mut App) {
         app.add_system_set(
