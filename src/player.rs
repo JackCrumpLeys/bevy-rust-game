@@ -1,9 +1,7 @@
 use crate::actions::Actions;
 use crate::loading::TextureAssets;
-use crate::GameState;
-use bevy::prelude::*;
+use crate::prelude::*;
 use bevy_rapier3d::prelude::RigidBody;
-use bevy_rapier3d::prelude::*;
 
 pub struct PlayerPlugin;
 
@@ -14,11 +12,9 @@ pub struct PlayerSettings {
     pub speed: f32,
 }
 
-impl Default for PlayerSettings{
+impl Default for PlayerSettings {
     fn default() -> Self {
-        PlayerSettings{
-            speed: 2.0,
-        }
+        PlayerSettings { speed: 2.0 }
     }
 }
 
@@ -26,45 +22,16 @@ impl Default for PlayerSettings{
 /// Player logic is only active during the State `GameState::Playing`
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_set(
-            SystemSet::on_enter(GameState::Playing)
-                .with_system(setup_map)
-                .with_system(spawn_player)
-                .with_system(spawn_camera),
-        )
-        .add_system_set(SystemSet::on_update(GameState::Playing).with_system(move_player))
-        .insert_resource(PlayerSettings::default());
+        app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_player))
+            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(move_player))
+            .insert_resource(PlayerSettings::default());
     }
 }
 
-fn spawn_camera(mut commands: Commands) {
-    // commands.spawn_bundle(OrthographicCameraBundle::new_2d());
-}
-
-/// set up a simple 3D scene (Orthographic example)
-fn setup_map(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
+fn spawn_player(
+    mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>, textures: Res<TextureAssets>,
 ) {
-    // set up the camera
-    let mut camera = OrthographicCameraBundle::new_3d();
-    camera.orthographic_projection.scale = 10.0;
-    camera.transform = Transform::from_xyz(5.0, 5.0, 5.0).looking_at(Vec3::ZERO, Vec3::Z);
-
-    // camera
-    commands.spawn_bundle(camera);
-    // light
-    commands.spawn_bundle(PointLightBundle {
-        transform: Transform::from_xyz(3.0, 8.0, 5.0),
-        ..default()
-    });
-}
-
-fn spawn_player(mut commands: Commands,
-                mut meshes: ResMut<Assets<Mesh>>,
-                mut materials: ResMut<Assets<StandardMaterial>>,
-                textures: Res<TextureAssets>) {
     commands
         .spawn_bundle(PbrBundle {
             mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
@@ -74,13 +41,12 @@ fn spawn_player(mut commands: Commands,
         })
         .insert(RigidBody::KinematicPositionBased)
         .insert(Collider::cuboid(0.5, 0.5, 0.5))
+        .insert(CameraFocus::default())
         .insert(Player);
 }
 
 fn move_player(
-    time: Res<Time>,
-    actions: Res<Actions>,
-    settings: Res<PlayerSettings>,
+    time: Res<Time>, actions: Res<Actions>, settings: Res<PlayerSettings>,
     mut player_query: Query<&mut Transform, With<Player>>,
 ) {
     if actions.player_movement.is_none() {

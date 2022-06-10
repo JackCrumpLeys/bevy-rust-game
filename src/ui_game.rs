@@ -1,12 +1,9 @@
-use bevy::prelude::*;
-use bevy_egui::EguiContext;
-use crate::{GameState, SystemSet};
 use crate::player::{Player, PlayerSettings};
+use crate::prelude::*;
+use bevy_egui::EguiContext;
 
 pub struct UiGame;
 
-/// This plugin is responsible for the game menu (containing only one button...)
-/// The menu is only drawn during the State `GameState::Menu` and is removed when that state is exited
 impl Plugin for UiGame {
     fn build(&self, app: &mut App) {
         app.add_system_set(
