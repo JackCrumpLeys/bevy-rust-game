@@ -1,8 +1,10 @@
 mod actions;
 mod audio;
+mod bullet;
 mod loading;
 mod menu;
 mod player;
+mod rhai;
 mod ui_game;
 
 use crate::actions::ActionsPlugin;
@@ -11,12 +13,15 @@ use crate::loading::LoadingPlugin;
 use crate::menu::MenuPlugin;
 use crate::player::PlayerPlugin;
 
+use crate::rhai::RhaiPlugin;
+use crate::ui_game::UiGame;
 use bevy::app::App;
 #[cfg(debug_assertions)]
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy::prelude::*;
 use bevy_egui::EguiPlugin;
-use crate::ui_game::UiGame;
+use bevy_mod_scripting::ScriptingPlugin;
+use crate::bullet::BulletPlugin;
 
 // This example game uses States to separate logic
 // See https://bevy-cheatbook.github.io/programming/states.html
@@ -42,7 +47,8 @@ impl Plugin for GamePlugin {
             .add_plugin(InternalAudioPlugin)
             .add_plugin(PlayerPlugin)
             .add_plugin(EguiPlugin)
-            .add_plugin(UiGame);
+            .add_plugin(UiGame)
+            .add_plugin(BulletPlugin);
 
         #[cfg(debug_assertions)]
         {

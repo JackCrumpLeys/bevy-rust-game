@@ -12,11 +12,9 @@ pub struct PlayerSettings {
     pub speed: f32,
 }
 
-impl Default for PlayerSettings{
+impl Default for PlayerSettings {
     fn default() -> Self {
-        PlayerSettings{
-            speed: 2.0,
-        }
+        PlayerSettings { speed: 2.0 }
     }
 }
 
@@ -59,10 +57,12 @@ fn setup_map(
     });
 }
 
-fn spawn_player(mut commands: Commands,
-                mut meshes: ResMut<Assets<Mesh>>,
-                mut materials: ResMut<Assets<StandardMaterial>>,
-                textures: Res<TextureAssets>) {
+fn spawn_player(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+    textures: Res<TextureAssets>,
+) {
     commands
         .spawn_bundle(PbrBundle {
             mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),

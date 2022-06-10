@@ -1,5 +1,5 @@
-use bevy::math::{vec2, XY};
 use crate::GameState;
+use bevy::math::{vec2, XY};
 use bevy::prelude::*;
 
 pub struct ActionsPlugin;
@@ -20,32 +20,29 @@ pub struct Actions {
 }
 
 fn set_movement_actions(mut actions: ResMut<Actions>, keyboard_input: Res<Input<KeyCode>>) {
-
     let mut player_movement = Vec2::ZERO;
 
-    if GameControl::Up.pressed(&keyboard_input){
+    if GameControl::Up.pressed(&keyboard_input) {
         player_movement.y += 1.0;
     }
 
-    if GameControl::Down.pressed(&keyboard_input){
+    if GameControl::Down.pressed(&keyboard_input) {
         player_movement.y -= 1.0;
     }
 
-    if GameControl::Right.pressed(&keyboard_input){
+    if GameControl::Right.pressed(&keyboard_input) {
         player_movement.x += 1.0;
     }
 
-    if GameControl::Left.pressed(&keyboard_input){
+    if GameControl::Left.pressed(&keyboard_input) {
         player_movement.x -= 1.0;
     }
 
-    if player_movement != Vec2::ZERO{
+    if player_movement != Vec2::ZERO {
         actions.player_movement = Some(player_movement)
-    }else {
+    } else {
         actions.player_movement = None
     }
-
-
 
     //     if GameControl::Up.just_released(&keyboard_input)
     //         || GameControl::Down.just_released(&keyboard_input)
