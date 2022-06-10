@@ -1,8 +1,14 @@
+use std::ops::DerefMut;
+use bevy::math::quat;
 use crate::player::{Player, PlayerSettings};
 use crate::{GameState, SystemSet};
 use bevy::prelude::*;
 use bevy_egui::EguiContext;
+use bevy_rapier3d::dynamics::RigidBody;
+use bevy_rapier3d::geometry::{Collider, Restitution};
+use egui::{Color32, Rgba, RichText};
 use crate::bullet::{BulletOptions, insert_bullet_at};
+use crate::physics::TestBall;
 
 pub struct UiGame;
 
@@ -18,9 +24,48 @@ impl Plugin for UiGame {
         app.add_system_set(
             SystemSet::on_update(GameState::Playing)
                 .with_system(player_diagnostics)
+                .with_system(ball_diagnostics)
                 .with_system(player_settings),
         );
     }
+}
+
+fn ball_diagnostics(mut egui_context: ResMut<EguiContext>, mut ball_query: Query<(Entity, &mut Transform), With<TestBall>>, mut commands: Commands,){
+    egui::Window::new("ball Diagnostics").show(egui_context.ctx_mut(), |ui| {
+        if ui.button("Spawn new ball").clicked() {
+            commands
+                .spawn()
+                .insert(RigidBody::Dynamic)
+                .insert(Collider::ball(0.5))
+                .insert(Restitution::coefficient(0.7))
+                .insert(TestBall)
+                .insert_bundle(TransformBundle::from(Transform::from_xyz(2.0, 0.0, 3.0)));
+        }
+        for (idx, (entity, mut ball)) in ball_query.iter_mut().enumerate() {
+            ui.label(RichText::new(format!("Ball {}", idx)).size(30.0).color(Rgba::GREEN));
+            ui.label(format!(
+                "Location {:.2},{:.2}",
+                ball.translation.x, ball.translation.y
+            ));
+            ui.add(
+                egui::Slider::new(&mut ball.translation.x, -50.0..=50.0)
+                    .text("Translation X"),
+            );
+            ui.add(
+                egui::Slider::new(&mut ball.translation.y, -50.0..=50.0)
+                    .text("Translation Y"),
+            );
+
+            if ui.button("Reset position").clicked() {
+                ball.translation = Vec3::default();
+                ball.rotation = Quat::default();
+            }
+
+            if ui.button(RichText::new("kill").color(Color32::RED)).clicked() {
+                commands.entity(entity).despawn()
+            }
+        }
+    });
 }
 
 fn player_diagnostics(
@@ -68,6 +113,10 @@ fn player_diagnostics(
                     pos: player_transform.translation,
                     rotation: player_transform.rotation
                 });
+            }
+            if ui.button("Reset position").clicked() {
+                player_transform.translation = Vec3::default();
+                player_transform.rotation = Quat::default();
             }
         }
     });

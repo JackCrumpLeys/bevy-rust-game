@@ -4,8 +4,9 @@ mod bullet;
 mod loading;
 mod menu;
 mod player;
-mod rhai;
+
 mod ui_game;
+mod physics;
 
 use crate::actions::ActionsPlugin;
 use crate::audio::InternalAudioPlugin;
@@ -13,14 +14,13 @@ use crate::loading::LoadingPlugin;
 use crate::menu::MenuPlugin;
 use crate::player::PlayerPlugin;
 
-use crate::rhai::RhaiPlugin;
-use crate::ui_game::UiGame;
 use bevy::app::App;
 #[cfg(debug_assertions)]
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy::prelude::*;
 use bevy_egui::EguiPlugin;
-use bevy_mod_scripting::ScriptingPlugin;
+use crate::physics::Physics;
+use crate::ui_game::UiGame;
 use crate::bullet::BulletPlugin;
 
 // This example game uses States to separate logic
@@ -45,6 +45,7 @@ impl Plugin for GamePlugin {
             .add_plugin(MenuPlugin)
             .add_plugin(ActionsPlugin)
             .add_plugin(InternalAudioPlugin)
+            .add_plugin(Physics)
             .add_plugin(PlayerPlugin)
             .add_plugin(EguiPlugin)
             .add_plugin(UiGame)

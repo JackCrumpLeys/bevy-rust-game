@@ -2,6 +2,7 @@ use crate::loading::TextureAssets;
 use crate::player::Player;
 use bevy::pbr::PbrBundle;
 use bevy::prelude::*;
+use bevy_rapier3d::prelude::*;
 use crate::GameState;
 
 pub struct BulletPlugin;
@@ -35,11 +36,14 @@ pub fn insert_bullet_at(
                 .with_rotation(options.rotation),
             ..default()
         })
+        .insert(RigidBody::KinematicPositionBased)
+        .insert(Collider::cuboid(0.175, 0.175, 0.175))
+
         .insert(Bullet);
 }
 fn bullet_update(mut bullet_query: Query<&mut Transform, With<Bullet>>, time: Res<Time>) {
     for mut bullet_transform in bullet_query.iter_mut() {
-        let velocity = (bullet_transform.forward() * time.delta_seconds()).normalize();
+        let velocity = (bullet_transform.local_x() * time.delta_seconds()).normalize();
 
         bullet_transform.translation += velocity;
     }

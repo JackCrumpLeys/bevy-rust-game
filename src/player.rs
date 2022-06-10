@@ -2,6 +2,8 @@ use crate::actions::Actions;
 use crate::loading::TextureAssets;
 use crate::GameState;
 use bevy::prelude::*;
+use bevy_rapier3d::prelude::RigidBody;
+use bevy_rapier3d::prelude::*;
 
 pub struct PlayerPlugin;
 
@@ -45,7 +47,7 @@ fn setup_map(
 ) {
     // set up the camera
     let mut camera = OrthographicCameraBundle::new_3d();
-    camera.orthographic_projection.scale = 5.0;
+    camera.orthographic_projection.scale = 10.0;
     camera.transform = Transform::from_xyz(5.0, 5.0, 5.0).looking_at(Vec3::ZERO, Vec3::Z);
 
     // camera
@@ -67,9 +69,11 @@ fn spawn_player(
         .spawn_bundle(PbrBundle {
             mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
             material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
-            transform: Transform::from_xyz(1.5, 0.5, 1.5),
+            transform: Transform::from_xyz(1.5, 0.5, 0.0),
             ..default()
         })
+        .insert(RigidBody::KinematicPositionBased)
+        .insert(Collider::cuboid(0.5, 0.5, 0.5))
         .insert(Player);
 }
 
