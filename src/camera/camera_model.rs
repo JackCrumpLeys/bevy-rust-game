@@ -1,4 +1,5 @@
-use bevy::math::{Quat, Vec3};
+#![allow(dead_code)]
+use bevy::math::Vec3;
 
 use super::AnimVect;
 

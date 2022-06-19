@@ -1,4 +1,4 @@
-use bevy::math::{Quat, Vec3};
+use bevy::math::Vec3;
 
 /// Animate a vector (pos) towards a goal with a simplified velocity simulation
 ///   Used by a CameraModel

@@ -2,6 +2,7 @@ mod actions;
 mod audio;
 mod bullet;
 mod camera;
+mod keybind;
 mod loading;
 mod menu;
 mod physics;
@@ -17,6 +18,7 @@ use crate::player::PlayerPlugin;
 
 use crate::bullet::BulletPlugin;
 use crate::camera::CameraPlugin;
+use crate::keybind::KeybindingsPlugin;
 use crate::physics::Physics;
 use crate::ui_game::UiGame;
 use bevy::app::App;
@@ -52,6 +54,7 @@ impl Plugin for GamePlugin {
             .add_plugin(EguiPlugin)
             .add_plugin(UiGame)
             .add_plugin(BulletPlugin)
+            .add_plugin(KeybindingsPlugin)
             .add_plugin(CameraPlugin);
 
         #[cfg(debug_assertions)]

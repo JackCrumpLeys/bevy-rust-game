@@ -1,4 +1,3 @@
-use crate::loading::FontAssets;
 use crate::prelude::*;
 use bevy_egui::EguiContext;
 use egui::{Rgba, RichText};
@@ -15,10 +14,7 @@ impl Plugin for MenuPlugin {
 
 fn ui_example(mut egui_context: ResMut<EguiContext>, mut state: ResMut<State<GameState>>) {
     egui::Window::new("Menu").show(egui_context.ctx_mut(), |ui| {
-        if ui
-            .button(RichText::new("play!").color(Rgba::GREEN).size(100.0))
-            .clicked()
-        {
+        if ui.button(RichText::new("play!").color(Rgba::GREEN).size(100.0)).clicked() {
             state.set(GameState::Playing).unwrap();
         }
     });

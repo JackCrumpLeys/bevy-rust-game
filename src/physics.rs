@@ -10,17 +10,13 @@ pub struct Physics;
 /// The menu is only drawn during the State `GameState::Menu` and is removed when that state is exited
 impl Plugin for Physics {
     fn build(&self, app: &mut App) {
-        app
-            .insert_resource(RapierConfiguration{
-                gravity: Vect::Z * -9.81,
-                ..RapierConfiguration::default()
-            })
-            .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
-            .add_plugin(RapierDebugRenderPlugin::default())
-            .add_system_set(
-            SystemSet::on_enter(GameState::Playing)
-                .with_system(setup_physics)
-        );
+        app.insert_resource(RapierConfiguration {
+            gravity: Vect::Z * -9.81,
+            ..RapierConfiguration::default()
+        })
+        .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
+        .add_plugin(RapierDebugRenderPlugin::default())
+        .add_system_set(SystemSet::on_enter(GameState::Playing).with_system(setup_physics));
     }
 }
 

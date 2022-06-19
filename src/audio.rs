@@ -1,5 +1,5 @@
-use crate::prelude::*;
 use crate::loading::AudioAssets;
+use crate::prelude::*;
 use bevy_kira_audio::{Audio, AudioPlugin};
 
 pub struct InternalAudioPlugin;

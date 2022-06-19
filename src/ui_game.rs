@@ -8,8 +8,11 @@ use egui::{Color32, Rgba, RichText};
 pub struct UiGame;
 
 #[derive(Default)]
-struct Rotation { /// had to do this because: trait `DerefMut` is required to modify through a dereference, but it is not implemented for `bevy::prelude::Quat` brobs better way to handle it
-    x:f32,y:f32,z:f32
+struct Rotation {
+    /// had to do this because: trait `DerefMut` is required to modify through a dereference, but it is not implemented for `bevy::prelude::Quat` brobs better way to handle it
+    x: f32,
+    y: f32,
+    z: f32,
 }
 
 impl Plugin for UiGame {
@@ -23,7 +26,10 @@ impl Plugin for UiGame {
     }
 }
 
-fn ball_diagnostics(mut egui_context: ResMut<EguiContext>, mut ball_query: Query<(Entity, &mut Transform), With<TestBall>>, mut commands: Commands,){
+fn ball_diagnostics(
+    mut egui_context: ResMut<EguiContext>,
+    mut ball_query: Query<(Entity, &mut Transform), With<TestBall>>, mut commands: Commands,
+) {
     egui::Window::new("ball Diagnostics").show(egui_context.ctx_mut(), |ui| {
         if ui.button("Spawn new ball").clicked() {
             commands
@@ -36,18 +42,9 @@ fn ball_diagnostics(mut egui_context: ResMut<EguiContext>, mut ball_query: Query
         }
         for (idx, (entity, mut ball)) in ball_query.iter_mut().enumerate() {
             ui.label(RichText::new(format!("Ball {}", idx)).size(30.0).color(Rgba::GREEN));
-            ui.label(format!(
-                "Location {:.2},{:.2}",
-                ball.translation.x, ball.translation.y
-            ));
-            ui.add(
-                egui::Slider::new(&mut ball.translation.x, -50.0..=50.0)
-                    .text("Translation X"),
-            );
-            ui.add(
-                egui::Slider::new(&mut ball.translation.y, -50.0..=50.0)
-                    .text("Translation Y"),
-            );
+            ui.label(format!("Location {:.2},{:.2}", ball.translation.x, ball.translation.y));
+            ui.add(egui::Slider::new(&mut ball.translation.x, -50.0..=50.0).text("Translation X"));
+            ui.add(egui::Slider::new(&mut ball.translation.y, -50.0..=50.0).text("Translation Y"));
 
             if ui.button("Reset position").clicked() {
                 ball.translation = Vec3::default();
@@ -67,10 +64,11 @@ fn player_diagnostics(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
+    // keybindings: Res<Keybindings>
 ) {
     egui::Window::new("Player Diagnostics").show(egui_context.ctx_mut(), |ui| {
         for (idx, mut player_transform) in player_query.iter_mut().enumerate() {
-            ui.label(format!("Player {}", idx));
+            ui.strong(format!("Player {}", idx));
             ui.label(format!(
                 "Location {:.2},{:.2}",
                 player_transform.translation.x, player_transform.translation.y
@@ -84,28 +82,25 @@ fn player_diagnostics(
                     .text("Translation Y"),
             );
             let (rot_x, rot_y, rot_z) = player_transform.rotation.to_euler(EulerRot::XYZ);
-            let mut rotation = Rotation{x: rot_x, y: rot_y, z: rot_z};
+            let mut rotation = Rotation { x: rot_x, y: rot_y, z: rot_z };
 
             // let mut rotation = Rotation { x:player_transform.rotation.x,y:player_transform.rotation.y, z:player_transform.rotation.z, w:player_transform.rotation.w };
-            ui.add(
-                egui::Slider::new(&mut rotation.x, -3.14..=3.14)
-                    .text("rotation X"),
-            );
-            ui.add(
-                egui::Slider::new(&mut rotation.y, -3.14..=3.14)
-                    .text("rotation Y"),
-            );
-            ui.add(
-                egui::Slider::new(&mut rotation.z, -3.14..=3.14)
-                    .text("rotation Z"),
-            );
-            player_transform.rotation = Quat::from_euler(EulerRot::XYZ, rotation.x, rotation.y, rotation.z);
+            ui.add(egui::Slider::new(&mut rotation.x, -3.14..=3.14).text("rotation X"));
+            ui.add(egui::Slider::new(&mut rotation.y, -3.14..=3.14).text("rotation Y"));
+            ui.add(egui::Slider::new(&mut rotation.z, -3.14..=3.14).text("rotation Z"));
+            player_transform.rotation =
+                Quat::from_euler(EulerRot::XYZ, rotation.x, rotation.y, rotation.z);
 
             if ui.button("spawn bullet").clicked() {
-                insert_bullet_at(&mut commands, &mut meshes, &mut materials, BulletOptions {
-                    pos: player_transform.translation,
-                    rotation: player_transform.rotation
-                });
+                insert_bullet_at(
+                    &mut commands,
+                    &mut meshes,
+                    &mut materials,
+                    BulletOptions {
+                        pos: player_transform.translation,
+                        rotation: player_transform.rotation,
+                    },
+                );
             }
             if ui.button("Reset position").clicked() {
                 player_transform.translation = Vec3::default();

@@ -49,7 +49,7 @@ impl Plugin for CameraPlugin {
 }
 
 /// set up a simple 3D scene (Orthographic example)
-fn spawn_camera(mut commands: Commands, mut materials: ResMut<Assets<StandardMaterial>>) {
+fn spawn_camera(mut commands: Commands) {
     // set up the camera
     let mut camera = OrthographicCameraBundle::new_3d();
     camera.orthographic_projection.scale = 10.0;
@@ -78,7 +78,7 @@ fn update_camera(
 
 fn determine_focus(mut data: ResMut<CameraData>, focus_on: Query<(&CameraFocus, &Transform)>) {
     let mut look_at = Vec3::ZERO;
-    let mut tot_weight = 0.0;
+    let mut _tot_weight = 0.0;
 
     let mut look_min: Option<Vec3> = None;
     let mut look_max: Option<Vec3> = None;
@@ -87,7 +87,7 @@ fn determine_focus(mut data: ResMut<CameraData>, focus_on: Query<(&CameraFocus, 
     for (focus, transform) in focus_on.iter() {
         let loc = transform.translation;
         look_at += loc * focus.weight;
-        tot_weight += focus.weight;
+        _tot_weight += focus.weight;
 
         // Find the bounds of all look_at locations
         look_min = Some(if let Some(l_min) = look_min { l_min.min(loc) } else { loc });

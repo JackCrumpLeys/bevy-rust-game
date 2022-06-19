@@ -1,6 +1,6 @@
-use crate::GameState;
-use bevy::math::{vec2, XY};
 use bevy::prelude::*;
+use crate::keybind::{set_action_state, ActionState, KeyActions};
+use crate::GameState;
 
 pub struct ActionsPlugin;
 
@@ -9,7 +9,8 @@ pub struct ActionsPlugin;
 impl Plugin for ActionsPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<Actions>().add_system_set(
-            SystemSet::on_update(GameState::Playing).with_system(set_movement_actions),
+            SystemSet::on_update(GameState::Playing)
+                .with_system(set_movement_actions.after(set_action_state)),
         );
     }
 }
@@ -19,22 +20,23 @@ pub struct Actions {
     pub player_movement: Option<Vec2>,
 }
 
-fn set_movement_actions(mut actions: ResMut<Actions>, keyboard_input: Res<Input<KeyCode>>) {
+fn set_movement_actions(mut actions: ResMut<Actions>, action_state: Res<ActionState>) {
     let mut player_movement = Vec2::ZERO;
+    let action_state = action_state.into_inner();
 
-    if GameControl::Up.pressed(&keyboard_input) {
+    if action_state[KeyActions::Up] {
         player_movement.y += 1.0;
     }
 
-    if GameControl::Down.pressed(&keyboard_input) {
+    if action_state[KeyActions::Down] {
         player_movement.y -= 1.0;
     }
 
-    if GameControl::Right.pressed(&keyboard_input) {
+    if action_state[KeyActions::Right] {
         player_movement.x += 1.0;
     }
 
-    if GameControl::Left.pressed(&keyboard_input) {
+    if action_state[KeyActions::Left] {
         player_movement.x -= 1.0;
     }
 
@@ -87,71 +89,4 @@ fn set_movement_actions(mut actions: ResMut<Actions>, keyboard_input: Res<Input<
     // } else {
     //     actions.player_movement = None;
     // }
-}
-
-enum GameControl {
-    Up,
-    Down,
-    Left,
-    Right,
-}
-
-impl GameControl {
-    fn just_released(&self, keyboard_input: &Res<Input<KeyCode>>) -> bool {
-        match self {
-            GameControl::Up => {
-                keyboard_input.just_released(KeyCode::W)
-                    || keyboard_input.just_released(KeyCode::Up)
-            }
-            GameControl::Down => {
-                keyboard_input.just_released(KeyCode::S)
-                    || keyboard_input.just_released(KeyCode::Down)
-            }
-            GameControl::Left => {
-                keyboard_input.just_released(KeyCode::A)
-                    || keyboard_input.just_released(KeyCode::Left)
-            }
-            GameControl::Right => {
-                keyboard_input.just_released(KeyCode::D)
-                    || keyboard_input.just_released(KeyCode::Right)
-            }
-        }
-    }
-
-    fn pressed(&self, keyboard_input: &Res<Input<KeyCode>>) -> bool {
-        match self {
-            GameControl::Up => {
-                keyboard_input.pressed(KeyCode::W) || keyboard_input.pressed(KeyCode::Up)
-            }
-            GameControl::Down => {
-                keyboard_input.pressed(KeyCode::S) || keyboard_input.pressed(KeyCode::Down)
-            }
-            GameControl::Left => {
-                keyboard_input.pressed(KeyCode::A) || keyboard_input.pressed(KeyCode::Left)
-            }
-            GameControl::Right => {
-                keyboard_input.pressed(KeyCode::D) || keyboard_input.pressed(KeyCode::Right)
-            }
-        }
-    }
-
-    fn just_pressed(&self, keyboard_input: &Res<Input<KeyCode>>) -> bool {
-        match self {
-            GameControl::Up => {
-                keyboard_input.just_pressed(KeyCode::W) || keyboard_input.just_pressed(KeyCode::Up)
-            }
-            GameControl::Down => {
-                keyboard_input.just_pressed(KeyCode::S)
-                    || keyboard_input.just_pressed(KeyCode::Down)
-            }
-            GameControl::Left => {
-                keyboard_input.just_pressed(KeyCode::A)
-                    || keyboard_input.just_pressed(KeyCode::Left)
-            }
-            GameControl::Right => {
-                keyboard_input.just_pressed(KeyCode::D)
-                    || keyboard_input.just_pressed(KeyCode::Right)
-            }
-        }
-    }
 }
