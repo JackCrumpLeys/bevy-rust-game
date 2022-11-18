@@ -1,3 +1,4 @@
+use std::time::Instant;
 use bevy::prelude::*;
 use crate::keybind::{set_action_state, ActionState, KeyActions};
 use crate::GameState;
@@ -15,13 +16,25 @@ impl Plugin for ActionsPlugin {
     }
 }
 
-#[derive(Default)]
 pub struct Actions {
-    pub player_movement: Option<Vec2>,
+    pub player_movement: Option<(Vec2, f32)>,
+    pub player_shoot: (bool, Instant),
 }
+
+impl Default for Actions {
+    fn default() -> Self {
+        Actions {
+            player_movement: None,
+            player_shoot: (false, Instant::now()),
+        }
+    }
+}
+
 
 fn set_movement_actions(mut actions: ResMut<Actions>, action_state: Res<ActionState>) {
     let mut player_movement = Vec2::ZERO;
+    let mut player_rotation = 0.0;
+
     let action_state = action_state.into_inner();
 
     if action_state[KeyActions::Up] {
@@ -40,8 +53,24 @@ fn set_movement_actions(mut actions: ResMut<Actions>, action_state: Res<ActionSt
         player_movement.x -= 1.0;
     }
 
-    if player_movement != Vec2::ZERO {
-        actions.player_movement = Some(player_movement)
+    if action_state[KeyActions::RotateLeft] {
+        player_rotation -= 0.1;
+    }
+
+    if action_state[KeyActions::RotateRight] {
+        player_rotation += 0.1;
+        println!("rotate right");
+    }
+
+    if actions.player_shoot.1.elapsed().as_secs_f32() >= 0.1 && action_state[KeyActions::Shoot] {
+        actions.player_shoot.0 = true;
+        actions.player_shoot.1 = Instant::now();
+    } else {
+        actions.player_shoot.0 = false;
+    }
+
+    if player_movement != Vec2::ZERO || player_rotation != 0.0 {
+        actions.player_movement = Some((player_movement, player_rotation));
     } else {
         actions.player_movement = None
     }

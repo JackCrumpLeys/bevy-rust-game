@@ -4,8 +4,10 @@ use bevy_rapier3d::prelude::RigidBody;
 
 pub struct PlayerPlugin;
 
-#[derive(Component)]
-pub struct Player;
+#[derive(Component, Default)]
+pub struct Player {
+    pub score: usize,
+}
 
 pub struct PlayerSettings {
     pub speed: f32,
@@ -41,9 +43,51 @@ fn spawn_player(
         .insert(RigidBody::KinematicPositionBased)
         .insert(Collider::cuboid(0.5, 0.5, 0.5))
         .insert(CameraFocus::default())
-        .insert(Player);
+        .insert(Player::default());
 }
 
+// fn set_movement_actions(mut actions: ResMut<Actions>, action_state: Res<ActionState>) {
+//     let mut player_movement = Vec2::ZERO;
+//     let mut player_rotation = 0;
+//
+//     let action_state = action_state.into_inner();
+//
+//     if action_state[KeyActions::Up] {
+//         player_movement.y += 1.0;
+//     }
+//
+//     if action_state[KeyActions::Down] {
+//         player_movement.y -= 1.0;
+//     }
+//
+//     if action_state[KeyActions::Right] {
+//         player_movement.x += 1.0;
+//     }
+//
+//     if action_state[KeyActions::Left] {
+//         player_movement.x -= 1.0;
+//     }
+//
+//     if action_state[KeyActions::RotateLeft] {
+//         player_rotation -= 1;
+//     }
+//
+//     if action_state[KeyActions::RotateRight] {
+//         player_rotation += 1;
+//     }
+//
+//     if actions.player_shoot.1.elapsed().as_secs_f32() >= 0.1 && action_state[KeyActions::Shoot] {
+//         actions.player_shoot.0 = true;
+//         actions.player_shoot.1 = Instant::now();
+//     } else {
+//         actions.player_shoot.0 = false;
+//     }
+//
+//     if player_movement != Vec2::ZERO {
+//         actions.player_movement = Some((player_movement, player_rotation));
+//     } else {
+//         actions.player_movement = None
+//     }
 fn move_player(
     time: Res<Time>, actions: Res<Actions>, settings: Res<PlayerSettings>,
     mut player_query: Query<&mut Transform, With<Player>>,
@@ -53,11 +97,13 @@ fn move_player(
     }
     let speed = settings.speed;
     let movement = Vec3::new(
-        actions.player_movement.unwrap().x * speed * time.delta_seconds(),
-        actions.player_movement.unwrap().y * speed * time.delta_seconds(),
+        actions.player_movement.unwrap().0.x * speed * time.delta_seconds(),
+        actions.player_movement.unwrap().0.y * speed * time.delta_seconds(),
         0.0,
     );
     for mut player_transform in player_query.iter_mut() {
         player_transform.translation += movement;
+        // rotation
+        player_transform.rotation *= Quat::from_rotation_z(actions.player_movement.unwrap().1);
     }
 }

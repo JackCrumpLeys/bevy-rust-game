@@ -23,6 +23,9 @@ pub enum KeyActions {
     Down,
     Left,
     Right,
+    RotateLeft,
+    RotateRight,
+    Shoot,
 }
 
 /// list of player settable keybindings
@@ -38,6 +41,9 @@ impl Default for Keybindings {
         map.insert(KeyActions::Down, KeyCode::S);
         map.insert(KeyActions::Left, KeyCode::A);
         map.insert(KeyActions::Right, KeyCode::D);
+        map.insert(KeyActions::RotateLeft, KeyCode::Q);
+        map.insert(KeyActions::RotateRight, KeyCode::E);
+        map.insert(KeyActions::Shoot, KeyCode::Space);
 
         Keybindings { map }
     }
@@ -65,6 +71,9 @@ impl Default for ActionState {
         map.insert(KeyActions::Down, false);
         map.insert(KeyActions::Left, false);
         map.insert(KeyActions::Right, false);
+        map.insert(KeyActions::RotateLeft, false);
+        map.insert(KeyActions::RotateRight, false);
+        map.insert(KeyActions::Shoot, false);
 
         ActionState { map }
     }
